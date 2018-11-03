@@ -19,7 +19,8 @@ if (!class_exists('Plugin')) {
     die('Hacking attemp!!');
 }
 
-class PluginGreeting extends Plugin {
+class PluginGreeting extends Plugin
+{
 
 
     /**
@@ -27,7 +28,8 @@ class PluginGreeting extends Plugin {
      *
      * @return boolean
      */
-    public function Activate() {
+    public function Activate()
+    {
         $this->Cache_Clean();
         return true;
     }
@@ -37,7 +39,8 @@ class PluginGreeting extends Plugin {
      *
      * @return void
      */
-    public function Init() {
+    public function Init()
+    {
     }
 
     /**
@@ -45,7 +48,8 @@ class PluginGreeting extends Plugin {
      *
      * @return boolean
      */
-    public function Deactivate() {
+    public function Deactivate()
+    {
         $this->Cache_Clean();
         return true;
     }

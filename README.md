@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/stfalcon-studio/ls-plugin_greeting.png?branch=master)](https://travis-ci.org/stfalcon-studio/ls-plugin_greeting)
-
 ОПИСАНИЕ
 --------
 
@@ -21,6 +19,9 @@
 ИСТОРИЯ ВЕРСИЙ
 --------------
 
+v0.4.0
+- адаптация под PHP7
+
 v0.3.0
 - Плагин адаптирован для работы с LiveStreet v1.0
 - Добавлены тестовые сценарии и конфиг для Travis CI
@@ -31,3 +32,18 @@ v0.2.0
 
 v0.1.0 (анонс http://livestreet.ru/blog/addons/8005.html)
 - Релиз плагина
+
+УСТАНОВКА
+---------
+
+Внесите изменения в файл настроек плагина `/plugins/greeting/config/config.php`
+
+Для конфигурирования доступны опции:
+$config['from_user_id'] = 1;	// id юзера от которого будут приходить сообщения
+$config['page_name'] = 'about';	// имя страницы ссылка на которую будет подставляться в шаблон сообщения вместо %%url%%
+
+Настройте шаблоны сообщений, которые хранятся в директории /plugins/greeting/templates/language
+В шаблонах можно использовать переменные %%name%% и %%url%%, которые будут заменены на логин пользователя
+и ссылку на страницу с именем $config['page_name'].
+
+После чего необходимо активировать плагин Greeting.
