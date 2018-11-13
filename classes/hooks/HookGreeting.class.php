@@ -14,6 +14,10 @@
 
 class PluginGreeting_HookGreeting extends Hook
 {
+    const ConfigKey = 'greeting';
+    const HooksArray = [
+        'module_user_add_after'  =>  'GreetUser',
+    ];
 
     /**
      * Регистрируем хуки
@@ -23,26 +27,32 @@ class PluginGreeting_HookGreeting extends Hook
     public function RegisterHook()
     {
         // цепляем хук на добавление нового пользователя
-        $this->AddHook('module_user_add_after', 'GreetUser', __CLASS__);
+        $plugin_config_key = $this::ConfigKey;
+        foreach ($this::HooksArray as $hook => $callback) {
+            $this->AddHook(
+                $hook,
+                $callback,
+                __CLASS__,
+                Config::Get("plugin.{$plugin_config_key}.hook_priority.{$hook}") ?? 1
+            );
+        }
     }
 
     /**
      * Отправляем приветствие новому пользователю
      *
-     * @param array $aVars
-     * @return void
+     * @param $aVars
+     * @throws Exception
      */
-
-
     public function GreetUser($aVars)
     {
         $oUserTo = &$aVars['result'];
         if (!$oUserTo) {
-            // если пользователь не задан
             return;
         }
 
         if ($oUserFrom = $this->User_GetUserById(Config::Get('plugin.greeting.from_user_id'))) {
+
             // пользователь указал язык при регистрации
             if (in_array('l10n', $this->Plugin_GetActivePlugins())) {
                 $sUserLang = getRequest('l10n_user_lang');
@@ -57,6 +67,7 @@ class PluginGreeting_HookGreeting extends Hook
             $sUrl = Router::GetPath('page') . Config::Get('plugin.greeting.page_name');
             $sTitle = $this->Lang_Get('plugin.greeting.greeting_title');
             $sText = $this->Lang_Get('plugin.greeting.greeting_text', array('name' => $sLogin, 'url' => $sUrl,));
+
             // создаем разговор
             $this->SendTalk($sTitle, $sText, $oUserFrom, $oUserTo);
         }
@@ -65,10 +76,11 @@ class PluginGreeting_HookGreeting extends Hook
     /**
      * Создаем разговор
      *
-     * @param string $sTitle
-     * @param string $sText
+     * @param $sTitle
+     * @param $sText
      * @param ModuleUser_EntityUser $oUserFrom
      * @param ModuleUser_EntityUser $oUserTo
+     * @throws Exception
      */
     protected function SendTalk($sTitle, $sText, ModuleUser_EntityUser $oUserFrom, ModuleUser_EntityUser $oUserTo)
     {
@@ -84,8 +96,10 @@ class PluginGreeting_HookGreeting extends Hook
         $oTalk->setText($sText);
         $oTalk->setDate(date("Y-m-d H:i:s"));
         $oTalk->setDateLast(date("Y-m-d H:i:s"));
+
         // устанавливаем параметр UserIdLast
         $oTalk->setTalkUserIdLast($oUserFrom->getId());
+
         // для того, чтобы пользователь от которого отправялются сообщения не видел их в списке своих сообщений
         // до тогов момента пока кто-то не напишет комментарий к сообщению
         $oTalk->setUserIp(Config::Get('IP_SENDER'));
